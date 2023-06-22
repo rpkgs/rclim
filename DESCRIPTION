@@ -1,0 +1,23 @@
+Package: clim
+Type: Package
+Title: 27 Extreme Climate Index
+Version: 0.1.10
+Authors@R: person("Dongdong", "Kong", email = "kongdd.sysu@gmail.com",
+  role = c("aut", "cre"))
+Description: 27 Extreme Climate Index.
+License: GPL-3
+Encoding: UTF-8
+LazyData: TRUE
+Depends:
+    R (>= 3.4), 
+    magrittr
+Imports:
+    dplyr,
+    zeallot
+Suggests: 
+    testthat (>= 3.1.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
