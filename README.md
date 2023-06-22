@@ -1,7 +1,25 @@
 # clim
 
-27 Extreme climate index defined by ETCCDI
+27 Extreme climate index defined by ETCCDI (<http://etccdi.pacificclimate.org/list_27_indices.shtml>).
 
+```R
+# remotes::install_github("pacificclimate/climdex.pcic")
+# remotes::install_github("rpkgs/clim")
+library(clim)
+library(Ipaper)
+
+df = climdata_raw %>% SpecialValue()
+# climdata_raw = fread("data-raw/climdata_raw.csv") %>% unique()
+
+d <- df[year == 1958, ]
+head(d)
+
+q_ref <- clim.quantile(df, ref = c(1961, 1990)) 
+r <- clim_index(d, q_ref)
+# index_P(d, q_ref)
+# index_T(d, q_ref)
+str(r)
+```
 
 ```r
 ## 任意时间尺度ETCCDI气候指数
@@ -54,21 +72,14 @@
 ## ========================================================================
 ```
 
-```r
-# remotes::install_github("pacificclimate/climdex.pcic")
-remotes::install_github("kongdd/clim")
-```
-
 # References
 
-1. <http://etccdi.pacificclimate.org/list_27_indices.shtml>
+1. <https://github.com/ECCC-CDAS/RClimDex>
 
-2. <https://github.com/ECCC-CDAS/RClimDex>
+2. <https://github.com/pacificclimate/climdex.pcic>
 
-3. <https://github.com/pacificclimate/climdex.pcic>
+3. 慈晖, 张强, 张江辉, 等. 1961-2010 年新疆极端降水过程时空特征[J]. 地理研究, 2014, 10:010.
 
-4. 慈晖, 张强, 张江辉, 等. 1961-2010 年新疆极端降水过程时空特征[J]. 地理研究, 2014, 10:010.
-
-5. Bartholy J, Pongrácz R. Regional analysis of extreme temperature and
+4. Bartholy J, Pongrácz R. Regional analysis of extreme temperature and
    precipitation indices for the Carpathian basin from 1946 to 2001. Global and
    Planetary Change, 2007, 57(1-2): 83-95.

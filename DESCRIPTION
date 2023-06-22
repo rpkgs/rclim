@@ -1,7 +1,7 @@
 Package: clim
 Type: Package
 Title: 27 Extreme Climate Index
-Version: 0.1.10
+Version: 0.1.1
 Authors@R: person("Dongdong", "Kong", email = "kongdd.sysu@gmail.com",
   role = c("aut", "cre"))
 Description: 27 Extreme Climate Index.
@@ -12,7 +12,7 @@ Depends:
     R (>= 3.4), 
     magrittr
 Imports:
-    dplyr
+    data.table
 Suggests: 
     testthat (>= 3.1.0),
     knitr,

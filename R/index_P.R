@@ -36,9 +36,11 @@ clim.CDD <- function(precp, item = "drought") {
 
 ## 25-26降雨大于95%、99%百分位值对应的天数与累计降雨量，
 #' @export
-clim.Rquantile <- function(precp, quantile.standard) {
-  R_days <- sapply(1:2, function(i) length(which(precp > quantile.standard[i]))) # list1 for q95, list2 for q99, days
-  R_precp <- sapply(1:2, function(i) sum(precp[which(precp > quantile.standard[i])])) # list1 for q95, list2 for q99, calculate
+clim.Rquantile <- function(precp, q_prcp) {
+  R_days <- sapply(1:2, function(i) length(which(precp > q_prcp[i]))) # list1 for q95, list2 for q99, days
+  R_precp <- sapply(1:2, function(i) sum(precp[which(precp > q_prcp[i])])) # list1 for q95, list2 for q99, calculate
+  
+  # print2(precp, R_days, R_precp)
   data.frame(R95D = R_days[1], R99D = R_days[2], R95P = R_precp[1], R99p = R_precp[2]) ## quickly return
 }
 

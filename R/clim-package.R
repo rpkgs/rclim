@@ -6,11 +6,46 @@
 NULL
 
 
+#' clim.quantile
+#'
+#' @return
+#' quantiles of `c("Tmax.10th", "Tmax.90th", "Tmin.10th", "Tmin.90th", "RR.95th", "RR.99th")`
+#'
+#' @importFrom data.table data.table
+#' @export
+clim.quantile <- function(df, ref = c(1961, 1990)) {
+  dates <- df[, make_date(year, month, day)]
+
+  date_begin <- make_date(ref[1])
+  date_end <- make_date(ref[2], 12, 31)
+  inds <- dates >= date_begin & dates <= date_end
+  d_ref <- df[inds, ]
+
+  if (length(d_ref) == 0) {
+    warning("在选择的标准期内不存在数据！")
+    return()
+  }
+
+  Tmax.filter <- filterSmooth(d_ref$Tmax)
+  Tmin.filter <- filterSmooth(d_ref$Tmin)
+
+  ## 95th percentile of precipitation on wet days in the ref
+  precp <- d_ref$precp
+  Precp_trim <- precp[precp >= 1.0]
+  ans <- c(
+    quantile(Tmax.filter, c(0.1, 0.9)),
+    quantile(Tmin.filter, c(0.1, 0.9)),
+    quantile(Precp_trim, c(0.95, 0.99))
+  )
+  setNames(ans, c("Tmax.10th", "Tmax.90th", "Tmin.10th", "Tmin.90th", "RR.95th", "RR.99th"))
+}
+
+
 #' clim_index
 #' @param q_ref quantile of the reference period
 #' 
 #' @export
-clim_index <- function(d, q_ref = clim_quantile) {
+clim_index <- function(d, q_ref) {
   data.frame(index_T(d, q_ref), index_P(d, q_ref))
 }
 

@@ -1,33 +1,68 @@
+## 0.1. 测试
+
 ```{r}
+library(clim)
 library(Ipaper)
 
-data = climdata_raw
+df = climdata_raw %>% SpecialValue()
 # climdata_raw = fread("data-raw/climdata_raw.csv") %>% unique()
+
+d <- df[year == 1958, ]
+head(d)
+
+q_ref <- clim.quantile(df, ref = c(1961, 1990)) 
+r <- clim_index(d, q_ref)
+# index_P(d, q_ref)
+# index_T(d, q_ref)
+str(r)
 ```
 
-## 测试
-
-```{r}
-d <- data[year == 1958, ] %>% SpecialValue() 
-allIndice(d)
-```
+'data.frame':   1 obs. of  29 variables:
+ $ FD     : int 187
+ $ SU     : int 57
+ $ ID     : int 124
+ $ TR     : int 0
+ $ GSL    : num 204
+ $ TXx    : num 33
+ $ TNx    : num 17.2
+ $ TXn    : num -26
+ $ TNn    : num -40.2
+ $ TN10p  : num 0.134
+ $ TX10p  : num 0.0822
+ $ TN90p  : num 0.0411
+ $ TX90p  : num 0.0329
+ $ WSDI   : int 0
+ $ CSDI   : int 9
+ $ DTR    : num 11.8
+ $ Rx1    : num 16.2
+ $ Rx5    : num 26.3
+ $ SDII   : num 3.63
+ $ RR10   : int 3
+ $ RR20   : int 0
+ $ RR25   : int 0
+ $ CDD    : int 27
+ $ CWD    : int 3
+ $ R95D   : int 2
+ $ R99D   : int 0
+ $ R95P   : num 28.4
+ $ R99p   : num 0
+ $ PRCPTOT: num 229
 
 > 输入数据需为连续逐日数据，按行排列，允许有空值
 > Segment时间段：生长季则为："04-10";水文年则为："04-03";春季则为"03-05";四月则为"04-04",逐月则为"month"
-## 1. 年尺度 
+# 1. 年尺度 
 ```{r}
 clim_data <- tidy_input(data, Segment = "01-12")
 clim_dataLs <- split(clim_data, clim_data$labels) ## 把数据按照标记label切分成段
 
 # clim_quantile <- clim.quantile(data, ref = c(1961, 1990)) ## 计算降雨和温度的百分位数
-AIndice <- lapply(clim_dataLs, allIndice) ## 数据整理成dataframe
-AIndice <- do.call(rbind.data.frame, AIndice)
-
+AIndice <- lapply(clim_dataLs, clim_index) ## 数据整理成dataframe
+AIndice <- do.call(rbind, AIndice)
 head(AIndice)
 # write.xlsx2(AIndice, file = "气候指标.xlsx")
 ```
 
-## 2. 月尺度
+# 2. 月尺度
 ```{r}#
 # clim_data <- tidy_input(data, Segment = "month")
 # clim_dataLs <- split(clim_data, clim_data$labels) ##把数据按照标记label切分成段#

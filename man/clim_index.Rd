@@ -6,7 +6,7 @@
 \alias{index_P}
 \title{clim_index}
 \usage{
-clim_index(d, q_ref = clim_quantile)
+clim_index(d, q_ref)
 
 index_T(d, q_ref)
 

@@ -42,7 +42,7 @@ climdex.gsl(ci)
 Tavg <- data[792:(792 + 365), 4]
 plot(Tavg)
 abline(h = 5, col = "red")
-# temp --------------------------------------------------------------------
+
 temp.data <- Tavg
 ts.mid <- floor(365 / 2)
 

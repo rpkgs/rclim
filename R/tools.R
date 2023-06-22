@@ -33,36 +33,3 @@ filterSmooth <- function(x, width = 5) {
   X_temp <- cbind(x[1:(n - width + 1)], x[2:(n - width + 2)], x[3:(n - width + 3)], x[4:(n - width + 4)], x[5:(n - width + 5)])
   apply(X_temp, 1, mean, na.rm = T)
 }
-
-#' clim.quantile
-#' 
-#' @return 
-#' quantiles of `c("Tmax.10th", "Tmax.90th", "Tmin.10th", "Tmin.90th", "RR.95th", "RR.99th")`
-#' 
-#' @importFrom data.table data.table
-#' @export
-clim.quantile <- function(d, ref = c(1961, 1990)) {
-  data <- SpecialValue(d)
-  dates <- d[, make_date(year, month, day)]
-
-  ## 截取标准期数据求分位数值
-  date_begin <- make_date(ref[1])
-  date_end <- make_date(ref[2], 12, 31)
-  inds <- dates >= date_begin & dates <= date_end
-  d_ref <- data[inds, ]
-
-  if (length(d_ref) == 0) {
-    warning("在选择的标准期内不存在数据！")
-    return()
-  }
-
-  Tmax.filter <- filterSmooth(d_ref[, 5])
-  Tmin.filter <- filterSmooth(d_ref[, 6])
-
-  ## 95th percentile of precipitation on wet days in the ref
-  precp <- d_ref[, 7]
-  Precp_trim <- precp[precp >= 1.0]
-  result <- c(quantile(Tmax.filter, c(0.1, 0.9)), quantile(Tmin.filter, c(0.1, 0.9)), quantile(Precp_trim, c(0.95, 0.99)))
-  names(result) <- c("Tmax.10th", "Tmax.90th", "Tmin.10th", "Tmin.90th", "RR.95th", "RR.99th")
-  result ## quantile result quickly return
-}
