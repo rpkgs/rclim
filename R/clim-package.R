@@ -27,8 +27,8 @@ clim.quantile <- function(df, ref = c(1961, 1990)) {
     return()
   }
 
-  Tmax.filter <- filterSmooth(d_ref$Tmax)
-  Tmin.filter <- filterSmooth(d_ref$Tmin)
+  Tmax.filter <- roll5(d_ref$Tmax)
+  Tmin.filter <- roll5(d_ref$Tmin)
 
   ## 95th percentile of precipitation on wet days in the ref
   prcp <- d_ref$prcp

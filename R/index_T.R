@@ -1,22 +1,20 @@
-# temperature and Precipitation quantile values ---------------------------
-
 # 关于温度的16个指标 --------------------------------------------------------------
 
 ## 1 FD, number of frost days: Annual count of days when TN (daily minimum temperature) < 0
 #' @export
-clim.FD <- function(Tmin) length(which(Tmin < 0)) ## for Tmin
+clim.FD <- function(Tmin) sum(Tmin < 0) ## for Tmin
 
 ## 2 SU, Number of summer days: Annual count of days when TX (daily maximum temperature) > 25
 #' @export
-clim.SU <- function(Tmax) length(which(Tmax > 25)) ## for Tmin
+clim.SU <- function(Tmax) sum(Tmax > 25) ## for Tmin
 
 ## 3 ID,  Number of icing days: Annual count of days when TX (daily maximum temperature) < 0
 #' @export
-clim.ID <- function(Tmax) length(which(Tmax < 0)) ## for Tmin
+clim.ID <- function(Tmax) sum(Tmax < 0) ## for Tmin
 
 ## 4 TR,   Number of tropical nights: Annual count of days when TN (daily minimum temperature) > 20
 #' @export
-clim.TR <- function(Tmin) length(which(Tmin > 20)) ## for Tmin
+clim.TR <- function(Tmin) sum(Tmin > 20) ## for Tmin
 
 ## 5 Growing season length: Annual (1st Jan to 31st Dec in Northern Hemisphere (NH), 1st July to 30th
 #  June in Southern Hemisphere (SH)) count between first span of at least 6 days with daily mean
@@ -34,14 +32,14 @@ clim.GSL <- function(Tavg) {
   ## 假定生长季Taver数据是整年输入，则生长季开始时间在1:(n/2)段，结束点在[(n/2)+1]:n段，n表示数据长度
   Id_begin <- which(Tavg > 5)
   Tag <- ContinueTag(Id_begin)
-  segment.length <- sapply(1:Tag[length(Tag)], function(i) length(which(Tag == i)))
-  TagId <- which(segment.length >= 6)[1] ## 如果查找不到则返回空值
+  seg.len <- sapply(1:last(Tag), function(i) sum(Tag == i))
+  TagId <- which(seg.len >= 6)[1] ## 如果查找不到则返回空值
   point.begin <- Id_begin[which(Tag == TagId)[1]] ## 生长季开始点需要在7月之前,如果未查找到则为空值，空值报错
 
   Id_end <- which(Tavg[(Nmid + 1):N] < 5) + Nmid
   Tag <- ContinueTag(Id_end)
-  segment.length <- sapply(1:Tag[length(Tag)], function(i) length(which(Tag == i)))
-  TagId <- which(segment.length >= 6)
+  seg.len <- sapply(1:last(Tag), function(i) sum(Tag == i))
+  TagId <- which(seg.len >= 6)
   TagId <- TagId[1] ## 如果查找不到则返回空值
   point.end <- Id_end[which(Tag == TagId)]
   point.end <- point.end[1] ## 生长季开始点需要在7月之前,如果未查找到则为空值，空值报错
@@ -84,10 +82,10 @@ clim.TNn <- function(Tmin) min(Tmin, na.rm = T)
 #' @export
 clim.Tthp <- function(Tmax, Tmin, Tquantile = clim_quantile) {
   N <- length(Tmax) ## Tmax, Tmin长度需保持一致
-  TN10p <- length(which(Tmin < Tquantile["Tmin.10th"])) / N
-  TX10p <- length(which(Tmax < Tquantile["Tmax.10th"])) / N
-  TN90p <- length(which(Tmin > Tquantile["Tmin.90th"])) / N
-  TX90p <- length(which(Tmax > Tquantile["Tmax.90th"])) / N
+  TN10p <- sum(Tmin < Tquantile["Tmin.10th"]) / N
+  TX10p <- sum(Tmax < Tquantile["Tmax.10th"]) / N
+  TN90p <- sum(Tmin > Tquantile["Tmin.90th"]) / N
+  TX90p <- sum(Tmax > Tquantile["Tmax.90th"]) / N
   data.frame(TN10p, TX10p, TN90p, TX90p)
 }
 
@@ -96,8 +94,8 @@ clim.Tthp <- function(Tmax, Tmin, Tquantile = clim_quantile) {
 clim.WSDI <- function(Tmax, Tquantile = clim_quantile) {
   Id <- which(Tmax > Tquantile["Tmax.90th"])
   Tag <- ContinueTag(Id)
-  segment.length <- sapply(1:Tag[length(Tag)], function(i) length(which(Tag == i)))
-  sum(segment.length[which(segment.length >= 6)])
+  seg.len <- sapply(1:last(Tag), function(i) sum(Tag == i))
+  sum(seg.len[seg.len >= 6])
 }
 
 ## 15 CSDI, Cold speel duration index: Annual count of days with at least 6 consecutive days when TN < 10th percentile
@@ -105,8 +103,8 @@ clim.WSDI <- function(Tmax, Tquantile = clim_quantile) {
 clim.CSDI <- function(Tmin, Tquantile = clim_quantile) {
   Id <- which(Tmin < Tquantile["Tmin.10th"])
   Tag <- ContinueTag(Id)
-  segment.length <- sapply(1:Tag[length(Tag)], function(i) length(which(Tag == i)))
-  sum(segment.length[which(segment.length >= 6)])
+  seg.len <- sapply(1:last(Tag), function(i) sum(Tag == i))
+  sum(seg.len[seg.len >= 6])
 }
 
 ## 16 DTR, Daily temperature range: Monthly mean difference between TX and TN

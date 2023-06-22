@@ -27,9 +27,10 @@ ContinueTag <- function(X) {
 }
 
 ## 对于温度 the calendar day 90th percentile centred on a 5-day window for the base ref
-filterSmooth <- function(x, width = 5) {
-  x <- as.numeric(x)
+roll5 <- function(x, fun = mean) {
   n <- length(x)
-  X_temp <- cbind(x[1:(n - width + 1)], x[2:(n - width + 2)], x[3:(n - width + 3)], x[4:(n - width + 4)], x[5:(n - width + 5)])
-  apply(X_temp, 1, mean, na.rm = T)
+  x2 <- cbind(x[1:(n - 4)], x[2:(n - 3)], x[3:(n - 2)], x[4:(n - 1)], x[5:(n)]) # 采用向后滑动求和
+  apply(x2, 1, fun, na.rm = T)
 }
+
+last <- function(x) { x[length(x)] }
