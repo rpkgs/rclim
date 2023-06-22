@@ -1,3 +1,4 @@
+#' @import magrittr
 #' @keywords internal
 "_PACKAGE"
 
@@ -30,8 +31,8 @@ clim.quantile <- function(df, ref = c(1961, 1990)) {
   Tmin.filter <- filterSmooth(d_ref$Tmin)
 
   ## 95th percentile of precipitation on wet days in the ref
-  precp <- d_ref$precp
-  Precp_trim <- precp[precp >= 1.0]
+  prcp <- d_ref$prcp
+  Precp_trim <- prcp[prcp >= 1.0]
   ans <- c(
     quantile(Tmax.filter, c(0.1, 0.9)),
     quantile(Tmin.filter, c(0.1, 0.9)),
@@ -56,7 +57,7 @@ index_T <- function(d, q_ref) {
   Tmin <- d$Tmin
   Tmax <- d$Tmax
   Tavg <- d$Tavg
-  precp <- d$precp
+  prcp <- d$prcp
 
   FD <- clim.FD(Tmin)
   SU <- clim.SU(Tmax)
@@ -71,21 +72,21 @@ index_T <- function(d, q_ref) {
   WSDI <- clim.WSDI(Tmax, q_ref)
   CSDI <- clim.CSDI(Tmin, q_ref)
   DTR <- clim.DTR(Tmax, Tmin)
-  cbind(FD, SU, ID, TR, GSL, TXx, TNx, TXn, TNn, Tthp, WSDI, CSDI, DTR) ## quickly return 13 extreme precp indice
+  cbind(FD, SU, ID, TR, GSL, TXx, TNx, TXn, TNn, Tthp, WSDI, CSDI, DTR) ## quickly return 13 extreme prcp indice
 }
 
 # 关于降水的11个指标 ----------------------------------------------------------
 #' @rdname clim_index
 #' @export
 index_P <- function(d, q_ref) {
-  precp <- d$precp
-  Rx <- clim.RX(precp)
-  SDII <- clim.SDII(precp)
-  RRN <- clim.RRN(precp, nm = c(10, 20, 25))
-  CDD <- clim.CDD(precp, item = "drought")
-  CWD <- clim.CDD(precp, item = "wet")
-  Rquantile <- clim.Rquantile(precp, q_ref[c("RR.95th", "RR.99th")])
-  PRCPTOT <- clim.PRCPTOT(precp)
+  prcp <- d$prcp
+  Rx <- clim.RX(prcp)
+  SDII <- clim.SDII(prcp)
+  RRN <- clim.RRN(prcp, nm = c(10, 20, 25))
+  CDD <- clim.CDD(prcp, item = "drought")
+  CWD <- clim.CDD(prcp, item = "wet")
+  Rquantile <- clim.Rquantile(prcp, q_ref[c("RR.95th", "RR.99th")])
+  PRCPTOT <- clim.PRCPTOT(prcp)
 
-  data.table(Rx, SDII, RRN, CDD, CWD, Rquantile, PRCPTOT) ## quickly return 13 extreme precp indice
+  data.table(Rx, SDII, RRN, CDD, CWD, Rquantile, PRCPTOT) ## quickly return 13 extreme prcp indice
 }

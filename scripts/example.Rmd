@@ -12,7 +12,7 @@ dates <- data[, make_date(year, month, day)] %>%
   as.POSIXlt() %>%
   as.PCICt(cal = "gregorian")
 
-ci <- climdexInput.raw(data$Tmax, data$Tmin, data$precp,
+ci <- climdexInput.raw(data$Tmax, data$Tmin, data$prcp,
   dates, dates, dates,
   base.range = c(1961, 1990),
   tavg = data$Tavg, tavg.dates = dates

@@ -18,8 +18,14 @@ q_ref <- clim.quantile(df, ref = c(1961, 1990))
 r <- clim_index(d, q_ref)
 # index_P(d, q_ref)
 # index_T(d, q_ref)
-str(r)
+r
 ```
+
+   FD SU  ID TR GSL TXx  TNx TXn   TNn     TN10p      TX10p      TN90p      TX90p WSDI CSDI      DTR  Rx1
+1 187 57 124  0 204  33 17.2 -26 -40.2 0.1342466 0.08219178 0.04109589 0.03287671    0    9 11.77589 16.2
+   Rx5     SDII RR10 RR20 RR25 CDD CWD R95D R99D R95P R99p PRCPTOT
+1 26.3 3.628571    3    0    0  27   3    2    0 28.4    0   228.6
+
 
 ```r
 ## 任意时间尺度ETCCDI气候指数

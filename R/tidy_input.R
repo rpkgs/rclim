@@ -3,40 +3,33 @@
 # - 生长季则为："04-10";
 # - 水文年则为："04-03";春季则为"03-05";四月则为"04-04",逐月则为"month"
 
+fix_prcp <- function(prcp) {
+  prcp[prcp == 32766] <- NA
+  prcp[prcp == 32700] <- 1
+  prcp[which(prcp >= 32000)] %<>% add(-32000) # 纯雾露霜
+  prcp[which(prcp >= 31000)] %<>% add(-31000) # 雨和雪的总量
+  prcp[which(prcp >= 30000)] %<>% add(-30000) # 雪量(仅包括雨夹雪，雪暴）
+  prcp / 10 # origin 0.1mm
+}
+
+fix_temp <- function(x) {
+  x[x == 32766] <- NA
+  x/10
+}
 
 # 降雨、温度、特殊值标记处理 -----------------------------------------------------------
 SpecialValue <- function(d) {
   ## 提取对应气象数据
-  precp <- d[, 7]
-  Tavg <- d[, 4]
-  Tmax <- d[, 5]
-  Tmin <- d[, 6]
-
-  # 特殊值标记处理----------------------------------------------------------------- 降水
-  precp[precp == 32766] <- NA
-  precp[precp == 32700] <- 1
-  precp[which(precp >= 32000)] <- precp[which(precp >= 32000)] - 32000 # 纯雾露霜
-  precp[which(precp >= 31000)] <- precp[which(precp >= 31000)] - 31000 # 雨和雪的总量
-  precp[which(precp >= 30000)] <- precp[which(precp >= 30000)] - 30000 # 雪量(仅包括雨夹雪，雪暴）
-  precp <- precp / 10 # origin 0.1mm
-  
-  ## 温度
-  Tmax[Tmax == 32766] <- NA
-  Tmin[Tmin == 32766] <- NA
-  Tmax <- Tmax / 10
-  Tmin <- Tmin / 10
-  
-  Tavg[Tavg == 32766] <- NA
-  Tavg <- Tavg / 10
-
-  Xnew <- data.table(d[, 1:3], Tavg, Tmax, Tmin, precp)
-  colnames(Xnew) <- c("year", "month", "day", "Tavg", "Tmax", "Tmin", "precp")
-  Xnew ## quickly return
+  d$prcp %<>% fix_prcp()
+  d$Tavg %<>% fix_temp()
+  d$Tmax %<>% fix_temp()
+  d$Tmin %<>% fix_temp()
+  d
 }
 
 
 #' tidy_input
-#' @param data A data.frame with the columns of `year, month, day, Tavg, Tmax, Tmin, precp`
+#' @param data A data.frame with the columns of `year, month, day, Tavg, Tmax, Tmin, prcp`
 #' @export
 tidy_input <- function(data, Segment = "04-03") {
   date_string <- sprintf("%d-%d-%d", data[, 1], data[, 2], data[, 3])
@@ -107,6 +100,6 @@ tidy_input <- function(data, Segment = "04-03") {
     }
   }
 
-  # c("year", "month", "day", "precp", "Tavg", "Tmax", "Tmin", "labels")
+  # c("year", "month", "day", "prcp", "Tavg", "Tmax", "Tmin", "labels")
   cbind(SpecialValue(data_trim), labels = data_trim$labels) # return
 }

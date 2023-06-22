@@ -7,7 +7,7 @@
 tidy_input(data, Segment = "04-03")
 }
 \arguments{
-\item{data}{A data.frame with the columns of \verb{year, month, day, Tavg, Tmax, Tmin, precp}}
+\item{data}{A data.frame with the columns of \verb{year, month, day, Tavg, Tmax, Tmin, prcp}}
 }
 \description{
 tidy_input
