@@ -1,40 +1,5 @@
 # temperature and Precipitation quantile values ---------------------------
 
-#' @export
-clim.quantile <- function(X, Period = "1961-1990") {
-  data <- SpecialValue(X)
-  date_string <- sprintf("%d-%d-%d", data[, 1], data[, 2], data[, 3])
-  date_daily <- as.Date(date_string)
-  data <- zoo(data, date_daily)
-  BeginYear <- as.numeric(substr(Period, 1, 4))
-  EndYear <- as.numeric(substr(Period, 6, 9))
-  ## 截取标准期数据求分位数值
-  standardPeriod <- seq(as.Date(sprintf("%d-01-01", BeginYear)), as.Date(sprintf("%d-12-31", EndYear)), by = "day")
-  data_trim <- window(data, standardPeriod)
-  if (length(data_trim) == 0) {
-    warning("在选择的标准期内不存在数据！")
-    return()
-  }
-  ## 对于温度 the calendar day 90th percentile centred on a 5-day window for the base period
-  filterSmooth <- function(x, width = 5) {
-    x <- as.numeric(x)
-    n <- length(x)
-    X_temp <- cbind(x[1:(n - width + 1)], x[2:(n - width + 2)], x[3:(n - width + 3)], x[4:(n - width + 4)], x[5:(n - width + 5)])
-    apply(X_temp, 1, mean, na.rm = T)
-  }
-
-  Tmax.filter <- filterSmooth(data_trim[, 5])
-  Tmin.filter <- filterSmooth(data_trim[, 6])
-
-  ## 95th percentile of precipitation on wet days in the period
-  Precp <- data_trim[, 7]
-  Precp_trim <- Precp[Precp >= 1.0]
-  result <- c(quantile(Tmax.filter, c(0.1, 0.9)), quantile(Tmin.filter, c(0.1, 0.9)), quantile(Precp_trim, c(0.95, 0.99)))
-  names(result) <- c("Tmax.10th", "Tmax.90th", "Tmin.10th", "Tmin.90th", "RR.95th", "RR.99th")
-  result ## quantile result quickly return
-}
-
-
 # 关于温度的16个指标 --------------------------------------------------------------
 
 ## 1 FD, number of frost days: Annual count of days when TN (daily minimum temperature) < 0
@@ -59,21 +24,21 @@ clim.TR <- function(Tmin) length(which(Tmin > 20)) ## for Tmin
 #  1-6月的第一次至少连续6日平均气温高于定义温度至7-12月第一次至少连续6日平均气温高于定义温度的持续天数
 #  生长季指数要求数据为整年，非整年的部分自动截去
 #  未记录生长季的起始时间，如有需要call me
-clim.GSL <- function(Taver) {
-  if (length(Taver) < 365) {
+clim.GSL <- function(Tavg) {
+  if (length(Tavg) < 365) {
     warning("生长季计算只能按照年尺度")
     return(NA)
   }
-  Nmid <- floor(length(Taver) / 2)
-  N <- length(Taver)
+  Nmid <- floor(length(Tavg) / 2)
+  N <- length(Tavg)
   ## 假定生长季Taver数据是整年输入，则生长季开始时间在1:(n/2)段，结束点在[(n/2)+1]:n段，n表示数据长度
-  Id_begin <- which(Taver > 5)
+  Id_begin <- which(Tavg > 5)
   Tag <- ContinueTag(Id_begin)
   segment.length <- sapply(1:Tag[length(Tag)], function(i) length(which(Tag == i)))
   TagId <- which(segment.length >= 6)[1] ## 如果查找不到则返回空值
   point.begin <- Id_begin[which(Tag == TagId)[1]] ## 生长季开始点需要在7月之前,如果未查找到则为空值，空值报错
 
-  Id_end <- which(Taver[(Nmid + 1):N] < 5) + Nmid
+  Id_end <- which(Tavg[(Nmid + 1):N] < 5) + Nmid
   Tag <- ContinueTag(Id_end)
   segment.length <- sapply(1:Tag[length(Tag)], function(i) length(which(Tag == i)))
   TagId <- which(segment.length >= 6)
