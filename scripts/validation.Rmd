@@ -1,0 +1,51 @@
+```{r}
+library(Ipaper)
+library(PCICt)
+require(climdex.pcic)
+library(clim)
+
+data <- climdata_raw %>% SpecialValue()
+```
+
+## pcic
+
+```{r}
+dates <- data[, make_date(year, month, day)] %>%
+  as.POSIXlt() %>%
+  as.PCICt(cal = "gregorian")
+
+ci <- climdexInput.raw(data$Tmax, data$Tmin, data$prcp,
+  dates, dates, dates,
+  base.range = c(1961, 1990),
+  tavg = data$Tavg, tavg.dates = dates
+)
+
+# R20, Rx5day, R95pTOT, CDD, prcptot
+years = data$year %>% unique()
+r_pcic = data.table(
+  year = years, 
+  cdd = climdex.cdd(ci, spells.can.span.years = FALSE), 
+  r20mm = climdex.r20mm(ci),
+  rx5day = climdex.rx5day(ci, freq = "annual"),
+  r95ptot = climdex.r95ptot(ci),
+  prcptot = climdex.prcptot(ci)
+)
+
+# CWD <- climdex.cwd(ci, spells.can.span.years = FALSE)
+# r10 <- climdex.r10mm(ci)
+# climdex.csdi(ci)
+# climdex.fd(ci)
+# climdex.su(ci)
+# climdex.id(ci)
+# climdex.gsl(ci)
+
+r_pcic
+```
+
+
+## clim
+
+```{r}
+r = clim.indexes(df)
+r[, .(CDD, year, RR20, Rx5, R95P, PRCPTOT)]
+```

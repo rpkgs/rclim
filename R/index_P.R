@@ -23,7 +23,7 @@ clim.RRN <- function(prcp, nm = c(10, 20, 25)) {
 #' @export
 clim.CDD <- function(prcp, item = "drought") {
   if (!item %in% c("drought", "wet")) stop("item param must bu 'drought' or 'wet'!")
-  if (item == "drought") cdd.id <- which(prcp < 1) else cdd.id <- which(prcp >= 1)
+  cdd.id <- if(item == "drought") which(prcp < 1) else which(prcp >= 1)
 
   Tag <- ContinueTag(cdd.id)
   cdd <- max(sapply(1:Tag[length(Tag)], function(i) sum(Tag == i))) ## 计算连续干旱天数

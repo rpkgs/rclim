@@ -15,7 +15,7 @@ d <- df[year == 1958, ]
 head(d)
 
 q_ref <- clim.quantile(df, ref = c(1961, 1990)) 
-r <- clim_index(d, q_ref)
+r <- clim.indexes_year(d, q_ref)
 # index_P(d, q_ref)
 # index_T(d, q_ref)
 r
